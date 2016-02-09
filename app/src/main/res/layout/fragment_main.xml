@@ -2,12 +2,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activity.MainActivity$PlaceholderFragment">
+    tools:activity=".activity.MainActivity$PlaceholderFragment">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view"
-        android:padding="2dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:background="?android:colorBackground"
+        android:clipToPadding="false"
+        android:padding="2dp" />
 
 </RelativeLayout>
