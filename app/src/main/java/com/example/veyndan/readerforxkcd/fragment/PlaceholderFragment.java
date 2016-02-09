@@ -8,7 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.veyndan.readerforxkcd.Comic;
+import com.example.veyndan.readerforxkcd.model.Comic;
 import com.example.veyndan.readerforxkcd.R;
 import com.example.veyndan.readerforxkcd.adapter.MainAdapter;
 

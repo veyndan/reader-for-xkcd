@@ -2,7 +2,6 @@
 <resources>
     <array name="icons">
         <item>@drawable/ic_home_white_24dp</item>
-        <item>@drawable/ic_shuffle_white_24dp</item>
         <item>@drawable/ic_search_white_24dp</item>
         <item>@drawable/ic_favorite_white_24dp</item>
     </array>

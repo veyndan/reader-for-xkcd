@@ -19,11 +19,7 @@ import com.example.veyndan.readerforxkcd.fragment.PlaceholderFragment;
 
 public class MainActivity extends BaseActivity {
 
-    private static final int PAGE_NUMBER = 4;
-
-    private SectionsPagerAdapter sectionsPagerAdapter;
-
-    private ViewPager viewPager;
+    private static final int PAGE_NUMBER = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,10 +33,10 @@ public class MainActivity extends BaseActivity {
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        viewPager = (ViewPager) findViewById(R.id.container);
+        ViewPager viewPager = (ViewPager) findViewById(R.id.container);
         viewPager.setAdapter(sectionsPagerAdapter);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
