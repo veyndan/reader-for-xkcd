@@ -5,6 +5,7 @@ import android.animation.TimeInterpolator;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
@@ -88,6 +89,13 @@ public class ImgActivity extends BaseActivity {
                         }
                     });
                 }
+            }
+        });
+
+        topLevelLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
             }
         });
     }
