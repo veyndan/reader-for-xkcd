@@ -38,7 +38,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
         public TextView num;
         public TextView alt;
 
-        public ViewHolder(final View itemView, final FragmentActivity activity, final List<Comic> dataset) {
+        public ViewHolder(final View itemView, final FragmentActivity activity) {
             super(itemView);
             img = (ImageView) itemView.findViewById(R.id.image);
             title = (TextView) itemView.findViewById(R.id.title);
@@ -53,12 +53,11 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
                     // obsolete configuration if the device rotates again in the meantime)
                     int[] screenLocation = new int[2];
                     v.getLocationOnScreen(screenLocation);
-                    Comic comic = dataset.get(getAdapterPosition());
                     Intent subActivity = new Intent(activity, ImgActivity.class);
                     int orientation = activity.getResources().getConfiguration().orientation;
                     subActivity.
                             putExtra(PACKAGE + ".orientation", orientation).
-                            putExtra(PACKAGE + ".img", comic.getImg()).
+                            putExtra(PACKAGE + ".img", (String) v.getTag()).
                             putExtra(PACKAGE + ".left", screenLocation[0]).
                             putExtra(PACKAGE + ".top", screenLocation[1]).
                             putExtra(PACKAGE + ".width", v.getWidth()).
@@ -82,7 +81,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_main, parent, false);
-        return new ViewHolder(v, activity, dataset);
+        return new ViewHolder(v, activity);
     }
 
     @Override
@@ -97,6 +96,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
             Log.v(TAG, String.valueOf(holder.img.getLayoutParams().height));
         }
         holder.img.setImageResource(android.R.color.transparent);
+        holder.img.setTag(comic.getImg());
         Glide.with(activity).load(comic.getImg()).into(new SimpleTarget<GlideDrawable>() {
             @Override
             public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
