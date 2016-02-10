@@ -5,6 +5,7 @@ import android.animation.TimeInterpolator;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.DecelerateInterpolator;
@@ -18,6 +19,7 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.example.veyndan.readerforxkcd.R;
 import com.example.veyndan.readerforxkcd.adapter.MainAdapter;
 import com.example.veyndan.readerforxkcd.util.LogUtils;
+import com.example.veyndan.readerforxkcd.util.UIUtils;
 
 public class ImgActivity extends BaseActivity {
     @SuppressWarnings("unused")
@@ -40,7 +42,7 @@ public class ImgActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_img);
         imageView = (ImageView) findViewById(R.id.imageView);
-        FrameLayout topLevelLayout = (FrameLayout) findViewById(R.id.topLevelLayout);
+        final FrameLayout topLevelLayout = (FrameLayout) findViewById(R.id.topLevelLayout);
 
         animDuration = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
@@ -98,6 +100,37 @@ public class ImgActivity extends BaseActivity {
                 onBackPressed();
             }
         });
+
+        topLevelLayout.setOnTouchListener(new View.OnTouchListener() {
+            static final float alphaConstant = 0.5f;
+
+            float dy;
+            float a;
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        dy = v.getY() - event.getRawY();
+                        a = imageView.getY() - event.getRawY();
+                        return false;
+                    case MotionEvent.ACTION_MOVE:
+                        imageView.animate()
+                                .y(event.getRawY() + a)
+                                .setDuration(0)
+                                .start();
+                        int alpha = (int) Math.max(0,
+                                255 - alphaConstant * Math.abs(event.getRawY() + dy));
+                        ObjectAnimator
+                                .ofInt(background, "alpha", alpha)
+                                .setDuration(0)
+                                .start();
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+        });
     }
 
     /**
@@ -127,6 +160,9 @@ public class ImgActivity extends BaseActivity {
         ObjectAnimator bgAnim = ObjectAnimator.ofInt(background, "alpha", 0, 255);
         bgAnim.setDuration(duration);
         bgAnim.start();
+
+        UIUtils.tintSystemBars(R.color.colorPrimaryDark, android.R.color.black,
+                animDuration, ImgActivity.this);
     }
 
     /**
@@ -170,6 +206,9 @@ public class ImgActivity extends BaseActivity {
         ObjectAnimator bgAnim = ObjectAnimator.ofInt(background, "alpha", 0);
         bgAnim.setDuration(duration);
         bgAnim.start();
+
+        UIUtils.tintSystemBars(android.R.color.black, R.color.colorPrimaryDark,
+                animDuration, ImgActivity.this);
     }
 
     /**
