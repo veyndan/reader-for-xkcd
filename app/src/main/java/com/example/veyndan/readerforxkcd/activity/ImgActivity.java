@@ -16,10 +16,12 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.example.veyndan.readerforxkcd.R;
-import com.example.veyndan.readerforxkcd.ShadowLayout;
 import com.example.veyndan.readerforxkcd.adapter.MainAdapter;
+import com.example.veyndan.readerforxkcd.util.LogUtils;
 
 public class ImgActivity extends BaseActivity {
+    @SuppressWarnings("unused")
+    private static final String TAG = LogUtils.makeLogTag(ImgActivity.class);
 
     private static final TimeInterpolator decelerator = new DecelerateInterpolator();
     private static final String PACKAGE_NAME = "com.example.android.activityanim";
@@ -31,7 +33,6 @@ public class ImgActivity extends BaseActivity {
     private float widthScale;
     private float heightScale;
     private ImageView imageView;
-    private ShadowLayout mShadowLayout;
     private int originalOrientation;
 
     @Override
@@ -40,7 +41,6 @@ public class ImgActivity extends BaseActivity {
         setContentView(R.layout.activity_img);
         imageView = (ImageView) findViewById(R.id.imageView);
         FrameLayout topLevelLayout = (FrameLayout) findViewById(R.id.topLevelLayout);
-        mShadowLayout = (ShadowLayout) findViewById(R.id.shadowLayout);
 
         animDuration = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
@@ -127,11 +127,6 @@ public class ImgActivity extends BaseActivity {
         ObjectAnimator bgAnim = ObjectAnimator.ofInt(background, "alpha", 0, 255);
         bgAnim.setDuration(duration);
         bgAnim.start();
-
-        // Animate a drop-shadow of the img
-        ObjectAnimator shadowAnim = ObjectAnimator.ofFloat(mShadowLayout, "shadowDepth", 0, 1);
-        shadowAnim.setDuration(duration);
-        shadowAnim.start();
     }
 
     /**
@@ -175,12 +170,6 @@ public class ImgActivity extends BaseActivity {
         ObjectAnimator bgAnim = ObjectAnimator.ofInt(background, "alpha", 0);
         bgAnim.setDuration(duration);
         bgAnim.start();
-
-        // Animate the shadow of the img
-        ObjectAnimator shadowAnim = ObjectAnimator.ofFloat(mShadowLayout,
-                "shadowDepth", 1, 0);
-        shadowAnim.setDuration(duration);
-        shadowAnim.start();
     }
 
     /**

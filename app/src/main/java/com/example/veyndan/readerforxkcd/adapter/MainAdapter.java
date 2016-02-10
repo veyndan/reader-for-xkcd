@@ -3,12 +3,10 @@ package com.example.veyndan.readerforxkcd.adapter;
 import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -87,14 +85,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         final Comic comic = dataset.get(position);
-        if (comic.getAspectRatio() > 0) {
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                    holder.img.getWidth(),
-                    (int) (holder.img.getWidth() * comic.getAspectRatio()));
-            holder.img.setLayoutParams(params);
-
-            Log.v(TAG, String.valueOf(holder.img.getLayoutParams().height));
-        }
+        holder.img.getLayoutParams().height = (int) (holder.img.getWidth() * comic.getAspectRatio());
         holder.img.setImageResource(android.R.color.transparent);
         holder.img.setTag(comic.getImg());
         Glide.with(activity).load(comic.getImg()).into(new SimpleTarget<GlideDrawable>() {
@@ -105,7 +96,9 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
                     double height = resource.getIntrinsicHeight();
                     comic.setAspectRatio(height / width);
                 }
+                holder.img.getLayoutParams().height = (int) (holder.img.getWidth() * comic.getAspectRatio());
                 holder.img.setImageDrawable(resource);
+
             }
         });
         holder.title.setText(comic.getTitle());
