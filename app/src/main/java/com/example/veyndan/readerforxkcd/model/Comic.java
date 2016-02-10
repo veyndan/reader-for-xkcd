@@ -4,16 +4,15 @@ public class Comic {
 
     private String img;
     private String title;
-    private short number;
-    private String description;
+    private short num;
+    private String alt;
     private double aspectRatio;
 
-    public Comic(String img, String title, short number, String description) {
+    public Comic(String img, String title, short num, String alt) {
         this.img = img;
         this.title = title;
-        this.number = number;
-        this.description = description;
-        this.aspectRatio = -1;
+        this.num = num;
+        this.alt = alt;
     }
 
     public String getImg() {
@@ -24,12 +23,12 @@ public class Comic {
         return title;
     }
 
-    public short getNumber() {
-        return number;
+    public short getNum() {
+        return num;
     }
 
-    public String getDescription() {
-        return description;
+    public String getAlt() {
+        return alt;
     }
 
     public void setAspectRatio(double aspectRatio) {

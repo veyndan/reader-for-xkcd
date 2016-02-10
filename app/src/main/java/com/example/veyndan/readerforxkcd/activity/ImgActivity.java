@@ -43,7 +43,7 @@ public class ImgActivity extends BaseActivity {
 
         animDuration = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
-        // Retrieve the data we need for the picture/description to display and
+        // Retrieve the data we need for the picture/alt to display and
         // the thumbnail to animate it from
         Bundle bundle = getIntent().getExtras();
         final String img = bundle.getString(PACKAGE_NAME + ".img");
@@ -120,7 +120,7 @@ public class ImgActivity extends BaseActivity {
         bgAnim.setDuration(duration);
         bgAnim.start();
 
-        // Animate a drop-shadow of the image
+        // Animate a drop-shadow of the img
         ObjectAnimator shadowAnim = ObjectAnimator.ofFloat(mShadowLayout, "shadowDepth", 0, 1);
         shadowAnim.setDuration(duration);
         shadowAnim.start();
@@ -137,7 +137,7 @@ public class ImgActivity extends BaseActivity {
     public void runExitAnimation(final Runnable endAction) {
         final long duration = (long) (animDuration * MainAdapter.animatorScale);
 
-        // No need to set initial values for the reverse animation; the image is at the
+        // No need to set initial values for the reverse animation; the img is at the
         // starting size/location that we want to start from. Just animate to the
         // thumbnail size/location that we retrieved earlier
 
@@ -155,7 +155,7 @@ public class ImgActivity extends BaseActivity {
             fadeOut = false;
         }
 
-        // Animate image back to thumbnail size/location
+        // Animate img back to thumbnail size/location
         imageView.animate().setDuration(duration).
                 scaleX(widthScale).scaleY(heightScale).
                 translationX(leftDelta).translationY(topDelta).
@@ -168,7 +168,7 @@ public class ImgActivity extends BaseActivity {
         bgAnim.setDuration(duration);
         bgAnim.start();
 
-        // Animate the shadow of the image
+        // Animate the shadow of the img
         ObjectAnimator shadowAnim = ObjectAnimator.ofFloat(mShadowLayout,
                 "shadowDepth", 1, 0);
         shadowAnim.setDuration(duration);

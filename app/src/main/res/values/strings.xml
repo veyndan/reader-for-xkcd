@@ -3,6 +3,6 @@
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
 
-    <string name="number">#%d</string>
+    <string name="num">#%d</string>
     <string name="title_activity_img">ImgActivity</string>
 </resources>

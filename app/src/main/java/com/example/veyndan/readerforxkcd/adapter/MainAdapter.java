@@ -33,23 +33,23 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
     private final List<Comic> dataset;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        public ImageView image;
+        public ImageView img;
         public TextView title;
-        public TextView number;
-        public TextView description;
+        public TextView num;
+        public TextView alt;
 
         public ViewHolder(final View itemView, final FragmentActivity activity, final List<Comic> dataset) {
             super(itemView);
-            image = (ImageView) itemView.findViewById(R.id.image);
+            img = (ImageView) itemView.findViewById(R.id.image);
             title = (TextView) itemView.findViewById(R.id.title);
-            number = (TextView) itemView.findViewById(R.id.number);
-            description = (TextView) itemView.findViewById(R.id.description);
+            num = (TextView) itemView.findViewById(R.id.num);
+            alt = (TextView) itemView.findViewById(R.id.alt);
 
-            image.setOnClickListener(new View.OnClickListener() {
+            img.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     // Interesting data to pass across are the thumbnail size/location, the
-                    // url of the image, and the orientation (to avoid returning back to an
+                    // url of the img, and the orientation (to avoid returning back to an
                     // obsolete configuration if the device rotates again in the meantime)
                     int[] screenLocation = new int[2];
                     v.getLocationOnScreen(screenLocation);
@@ -88,28 +88,29 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         final Comic comic = dataset.get(position);
-        if (comic.getAspectRatio() != -1) {
+        if (comic.getAspectRatio() > 0) {
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                    holder.image.getWidth(),
-                    (int) (holder.image.getWidth() * comic.getAspectRatio()));
-            holder.image.setLayoutParams(params);
-            Log.v(TAG, "Aspect ratio: " + comic.getAspectRatio());
+                    holder.img.getWidth(),
+                    (int) (holder.img.getWidth() * comic.getAspectRatio()));
+            holder.img.setLayoutParams(params);
+
+            Log.v(TAG, String.valueOf(holder.img.getLayoutParams().height));
         }
+        holder.img.setImageResource(android.R.color.transparent);
         Glide.with(activity).load(comic.getImg()).into(new SimpleTarget<GlideDrawable>() {
             @Override
             public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
-                if (comic.getAspectRatio() == -1) {
+                if (comic.getAspectRatio() <= 0) {
                     double width = resource.getIntrinsicWidth();
                     double height = resource.getIntrinsicHeight();
                     comic.setAspectRatio(height / width);
                 }
-                // TODO Obviously change as making two requests for same image
-                Glide.with(activity).load(comic.getImg()).into(holder.image);
+                holder.img.setImageDrawable(resource);
             }
         });
         holder.title.setText(comic.getTitle());
-        holder.number.setText(activity.getString(R.string.number, comic.getNumber()));
-        holder.description.setText(comic.getDescription());
+        holder.num.setText(activity.getString(R.string.num, comic.getNum()));
+        holder.alt.setText(comic.getAlt());
     }
 
     @Override

@@ -32,7 +32,7 @@
             android:textSize="@dimen/text_size_medium" />
 
         <TextView
-            android:id="@+id/number"
+            android:id="@+id/num"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="16dp"
@@ -42,7 +42,7 @@
             android:textSize="@dimen/text_size_small" />
 
         <TextView
-            android:id="@+id/description"
+            android:id="@+id/alt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="24dp"
