@@ -30,12 +30,14 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
     private final FragmentActivity activity;
     private final List<Comic> dataset;
 
+    public static ImageView hiddenImageView;
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
+
         public ImageView img;
         public TextView title;
         public TextView num;
         public TextView alt;
-
         public ViewHolder(final View itemView, final FragmentActivity activity) {
             super(itemView);
             img = (ImageView) itemView.findViewById(R.id.image);
@@ -65,14 +67,23 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
                     // Override transitions: we don't want the normal window animation in addition
                     // to our custom one
                     activity.overridePendingTransition(0, 0);
+
+                    hiddenImageView = img;
                 }
             });
         }
-    }
 
+    }
     public MainAdapter(FragmentActivity activity, List<Comic> dataset) {
         this.activity = activity;
         this.dataset = dataset;
+    }
+
+    public void onResume() {
+        if (hiddenImageView != null) {
+            hiddenImageView.setVisibility(View.VISIBLE);
+            hiddenImageView = null;
+        }
     }
 
     @Override

@@ -161,6 +161,8 @@ public class ImgActivity extends BaseActivity {
                 translationX(0).translationY(0).
                 setInterpolator(decelerator);
 
+        MainAdapter.hiddenImageView.setVisibility(View.INVISIBLE);
+
         // Fade in the black background
         ObjectAnimator bgAnim = ObjectAnimator.ofInt(background, "alpha", 0, 255);
         bgAnim.setDuration(duration);

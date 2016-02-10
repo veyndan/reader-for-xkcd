@@ -16,8 +16,11 @@ import android.view.MenuItem;
 import com.example.veyndan.readerforxkcd.R;
 import com.example.veyndan.readerforxkcd.fragment.HomeFragment;
 import com.example.veyndan.readerforxkcd.fragment.PlaceholderFragment;
+import com.example.veyndan.readerforxkcd.util.LogUtils;
 
 public class MainActivity extends BaseActivity {
+    @SuppressWarnings("unused")
+    private static final String TAG = LogUtils.makeLogTag(MainActivity.class);
 
     private static final int PAGE_NUMBER = 3;
 
