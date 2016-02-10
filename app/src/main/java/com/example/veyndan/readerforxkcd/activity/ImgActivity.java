@@ -4,7 +4,9 @@ import android.animation.ObjectAnimator;
 import android.animation.TimeInterpolator;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -115,16 +117,19 @@ public class ImgActivity extends BaseActivity {
                         a = imageView.getY() - event.getRawY();
                         return false;
                     case MotionEvent.ACTION_MOVE:
-                        imageView.animate()
-                                .y(event.getRawY() + a)
-                                .setDuration(0)
-                                .start();
+                        imageView.setY(event.getRawY() + a);
                         int alpha = (int) Math.max(0,
                                 255 - alphaConstant * Math.abs(event.getRawY() + dy));
-                        ObjectAnimator
-                                .ofInt(background, "alpha", alpha)
-                                .setDuration(0)
-                                .start();
+                        background.setAlpha(alpha);
+
+
+                        final int statusBarColorFrom = ContextCompat.getColor(ImgActivity.this, android.R.color.black);
+                        final int statusBarColorTo = ContextCompat.getColor(ImgActivity.this, R.color.colorPrimaryDark);
+
+                        int blended = UIUtils.blendColors(statusBarColorFrom, statusBarColorTo, 1f - alpha / 255f);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            getWindow().setStatusBarColor(blended);
+                        }
                         return true;
                     default:
                         return false;
@@ -161,7 +166,9 @@ public class ImgActivity extends BaseActivity {
         bgAnim.setDuration(duration);
         bgAnim.start();
 
-        UIUtils.tintSystemBars(R.color.colorPrimaryDark, android.R.color.black,
+        UIUtils.tintSystemBars(
+                ContextCompat.getColor(this, R.color.colorPrimaryDark),
+                ContextCompat.getColor(this, android.R.color.black),
                 animDuration, ImgActivity.this);
     }
 
@@ -207,8 +214,11 @@ public class ImgActivity extends BaseActivity {
         bgAnim.setDuration(duration);
         bgAnim.start();
 
-        UIUtils.tintSystemBars(android.R.color.black, R.color.colorPrimaryDark,
-                animDuration, ImgActivity.this);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            UIUtils.tintSystemBars(getWindow().getStatusBarColor(),
+                    ContextCompat.getColor(this, R.color.colorPrimaryDark),
+                    animDuration, ImgActivity.this);
+        }
     }
 
     /**

@@ -4,19 +4,15 @@ import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Build;
-import android.support.annotation.ColorRes;
-import android.support.v4.content.ContextCompat;
+import android.support.annotation.ColorInt;
 
 import com.example.veyndan.readerforxkcd.adapter.MainAdapter;
 
 public class UIUtils {
 
-    public static void tintSystemBars(@ColorRes int from, @ColorRes int to,
+    public static void tintSystemBars(@ColorInt final int from, @ColorInt final int to,
                                       int animDuration, final Activity activity) {
         final long duration = (long) (animDuration * MainAdapter.animatorScale);
-
-        final int statusBarColorFrom = ContextCompat.getColor(activity, from);
-        final int statusBarColorTo = ContextCompat.getColor(activity, to);
 
         ValueAnimator anim = ValueAnimator.ofFloat(0, 1f);
         anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -26,7 +22,7 @@ public class UIUtils {
                 float position = animation.getAnimatedFraction();
 
                 // Apply blended color to the status bar.
-                int blended = blendColors(statusBarColorFrom, statusBarColorTo, position);
+                int blended = blendColors(from, to, position);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     activity.getWindow().setStatusBarColor(blended);
                 }
@@ -37,8 +33,7 @@ public class UIUtils {
         anim.setDuration(duration).start();
     }
 
-
-    private static int blendColors(int from, int to, float ratio) {
+    public static int blendColors(int from, int to, float ratio) {
         final float inverseRatio = 1f - ratio;
 
         final float r = Color.red(to) * ratio + Color.red(from) * inverseRatio;
