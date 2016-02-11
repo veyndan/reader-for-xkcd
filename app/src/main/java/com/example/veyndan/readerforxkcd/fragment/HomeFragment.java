@@ -8,13 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.Volley;
-import com.example.veyndan.readerforxkcd.GsonRequest;
 import com.example.veyndan.readerforxkcd.R;
-import com.example.veyndan.readerforxkcd.Xkcd;
 import com.example.veyndan.readerforxkcd.adapter.MainAdapter;
 import com.example.veyndan.readerforxkcd.model.Comic;
 import com.example.veyndan.readerforxkcd.util.LogUtils;
@@ -22,15 +16,26 @@ import com.example.veyndan.readerforxkcd.util.LogUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit.Call;
+import retrofit.Callback;
+import retrofit.GsonConverterFactory;
+import retrofit.Retrofit;
+import retrofit.http.GET;
+import retrofit.http.Path;
+
 public class HomeFragment extends BaseFragment {
     private static final String TAG = LogUtils.makeLogTag(HomeFragment.class);
+
+    public static final String BASE_URL = "https://xkcd.com";
+    Retrofit retrofit = new Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build();
 
     private RecyclerView recyclerView;
 
     private List<Comic> comics = new ArrayList<>();
     private MainAdapter adapter;
-
-    private RequestQueue requestQueue;
 
     public HomeFragment() {
     }
@@ -58,47 +63,43 @@ public class HomeFragment extends BaseFragment {
     }
 
     private void load() {
-        requestQueue = Volley.newRequestQueue(getActivity());
+
+        MyApiEndpointInterface apiService = retrofit.create(MyApiEndpointInterface.class);
 
         for (int i = 400; i > 300; i--) {
-            GsonRequest<Comic> gsonRequest = new GsonRequest<>(
-                    String.format(Xkcd.JSON_URL, i),
-                    Comic.class,
-                    null,
-                    new Response.Listener<Comic>() {
-                        @Override
-                        public void onResponse(Comic response) {
-                            comics.add(response);
-                            if (comics.size() == 100) {
-                                adapter = new MainAdapter(getActivity(), comics);
-                                recyclerView.setAdapter(adapter);
-                            }
-                        }
-                    },
-                    new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            Log.e(TAG, error.getMessage());
-                        }
+            Call<Comic> call = apiService.getComic(i);
+            call.enqueue(new Callback<Comic>() {
+                @Override
+                public void onResponse(retrofit.Response<Comic> response, Retrofit retrofit) {
+                    Comic comic = response.body();
+                    comics.add(comic);
+                    if (comics.size() == 100) {
+                        adapter = new MainAdapter(getActivity(), comics);
+                        recyclerView.setAdapter(adapter);
                     }
-            );
-            gsonRequest.setTag(TAG);
+                }
 
-            requestQueue.add(gsonRequest);
+                @Override
+                public void onFailure(Throwable t) {
+                    // Log error here since request failed
+                    Log.e(TAG, t.getMessage());
+                }
+            });
         }
-    }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (requestQueue != null) {
-            requestQueue.cancelAll(TAG);
-        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
         adapter.onResume();
+    }
+
+    public interface MyApiEndpointInterface {
+        // Request method and URL specified in the annotation
+        // Callback for the parsed response is the last parameter
+
+        @GET("/{num}/info.0.json")
+        Call<Comic> getComic(@Path("num") int num);
     }
 }
