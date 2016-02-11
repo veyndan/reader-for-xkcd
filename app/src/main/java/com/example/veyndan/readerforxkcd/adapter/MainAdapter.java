@@ -108,8 +108,8 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
                     comic.setAspectRatio(height / width);
                 }
                 holder.img.getLayoutParams().height = (int) (holder.img.getWidth() * comic.getAspectRatio());
+                // TODO Doesn't load gifs
                 holder.img.setImageDrawable(resource);
-
             }
         });
         holder.title.setText(comic.getTitle());

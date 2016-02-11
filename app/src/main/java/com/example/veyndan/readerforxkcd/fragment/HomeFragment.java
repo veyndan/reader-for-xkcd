@@ -16,12 +16,18 @@ import com.example.veyndan.readerforxkcd.util.LogUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import retrofit.Call;
-import retrofit.Callback;
 import retrofit.GsonConverterFactory;
+import retrofit.HttpException;
 import retrofit.Retrofit;
+import retrofit.RxJavaCallAdapterFactory;
 import retrofit.http.GET;
 import retrofit.http.Path;
+import rx.Observable;
+import rx.Subscriber;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+import rx.subscriptions.CompositeSubscription;
 
 public class HomeFragment extends BaseFragment {
     private static final String TAG = LogUtils.makeLogTag(HomeFragment.class);
@@ -30,9 +36,10 @@ public class HomeFragment extends BaseFragment {
     Retrofit retrofit = new Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
+            .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
             .build();
 
-    private RecyclerView recyclerView;
+    private CompositeSubscription cs;
 
     private List<Comic> comics = new ArrayList<>();
     private MainAdapter adapter;
@@ -53,7 +60,7 @@ public class HomeFragment extends BaseFragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
+        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
         adapter = new MainAdapter(getActivity(), comics);
@@ -64,27 +71,38 @@ public class HomeFragment extends BaseFragment {
 
     private void load() {
 
-        MyApiEndpointInterface apiService = retrofit.create(MyApiEndpointInterface.class);
+        final MyApiEndpointInterface apiService = retrofit.create(MyApiEndpointInterface.class);
 
-        for (int i = 400; i > 300; i--) {
-            Call<Comic> call = apiService.getComic(i);
-            call.enqueue(new Callback<Comic>() {
-                @Override
-                public void onResponse(retrofit.Response<Comic> response, Retrofit retrofit) {
-                    Comic comic = response.body();
-                    comics.add(comic);
-                    if (comics.size() == 100) {
-                        adapter = new MainAdapter(getActivity(), comics);
-                        recyclerView.setAdapter(adapter);
-                    }
-                }
+        cs = new CompositeSubscription();
 
-                @Override
-                public void onFailure(Throwable t) {
-                    // Log error here since request failed
-                    Log.e(TAG, t.getMessage());
-                }
-            });
+
+        // TODO: https://github.com/codepath/android_guides/wiki/RxJava#hot-vs-cold-observables
+        // Explains how to chain async operations (i.e. get latest comic number and loop from that
+        // number down to 1 to load all comics
+        // TODO Error on i = 404
+        for (short i = 1000; i > 0; i--) {
+            Subscription subscription = apiService.getComic(i)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Subscriber<Comic>() {
+                        @Override
+                        public void onCompleted() {
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            // cast to retrofit.HttpException to get the response code
+                            if (e instanceof HttpException) {
+                                Log.e(TAG, String.valueOf(((HttpException) e).code()));
+                            }
+                        }
+
+                        @Override
+                        public void onNext(Comic comic) {
+                            comics.add(comic);
+                        }
+                    });
+            cs.add(subscription);
         }
 
     }
@@ -95,11 +113,17 @@ public class HomeFragment extends BaseFragment {
         adapter.onResume();
     }
 
-    public interface MyApiEndpointInterface {
-        // Request method and URL specified in the annotation
-        // Callback for the parsed response is the last parameter
+    @Override
+    public void onDestroy() {
+        cs.unsubscribe();
+        super.onDestroy();
+    }
 
+    public interface MyApiEndpointInterface {
         @GET("/{num}/info.0.json")
-        Call<Comic> getComic(@Path("num") int num);
+        Observable<Comic> getComic(@Path("num") int num);
+
+        @GET("/info.0.json")
+        Observable<Comic> getLatest();
     }
 }
