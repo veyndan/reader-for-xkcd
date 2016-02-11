@@ -24,7 +24,6 @@ import retrofit.http.GET;
 import retrofit.http.Path;
 import rx.Observable;
 import rx.Subscriber;
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
@@ -39,10 +38,12 @@ public class HomeFragment extends BaseFragment {
             .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
             .build();
 
-    private CompositeSubscription cs;
+    private CompositeSubscription subscriptions = new CompositeSubscription();
 
     private List<Comic> comics = new ArrayList<>();
     private MainAdapter adapter;
+
+    private RecyclerView recyclerView;
 
     public HomeFragment() {
     }
@@ -60,7 +61,7 @@ public class HomeFragment extends BaseFragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
+        recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
         adapter = new MainAdapter(getActivity(), comics);
@@ -70,18 +71,14 @@ public class HomeFragment extends BaseFragment {
     }
 
     private void load() {
-
         final MyApiEndpointInterface apiService = retrofit.create(MyApiEndpointInterface.class);
 
-        cs = new CompositeSubscription();
-
-
-        // TODO: https://github.com/codepath/android_guides/wiki/RxJava#hot-vs-cold-observables
+        // TODO: https://github.com/codepath/android_guides/wiki/RxJava
         // Explains how to chain async operations (i.e. get latest comic number and loop from that
         // number down to 1 to load all comics
         // TODO Error on i = 404
-        for (short i = 1000; i > 0; i--) {
-            Subscription subscription = apiService.getComic(i)
+        for (short i = 100; i > 0; i--) {
+            subscriptions.add(apiService.getComic(i)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Subscriber<Comic>() {
@@ -101,8 +98,7 @@ public class HomeFragment extends BaseFragment {
                         public void onNext(Comic comic) {
                             comics.add(comic);
                         }
-                    });
-            cs.add(subscription);
+                    }));
         }
 
     }
@@ -115,8 +111,13 @@ public class HomeFragment extends BaseFragment {
 
     @Override
     public void onDestroy() {
-        cs.unsubscribe();
+        subscriptions.unsubscribe();
         super.onDestroy();
+    }
+
+    @Override
+    public RecyclerView getRecyclerView() {
+        return recyclerView;
     }
 
     public interface MyApiEndpointInterface {

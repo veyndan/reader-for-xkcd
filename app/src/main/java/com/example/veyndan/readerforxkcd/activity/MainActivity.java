@@ -10,19 +10,26 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.veyndan.readerforxkcd.R;
+import com.example.veyndan.readerforxkcd.fragment.BaseFragment;
 import com.example.veyndan.readerforxkcd.fragment.HomeFragment;
 import com.example.veyndan.readerforxkcd.fragment.PlaceholderFragment;
 import com.example.veyndan.readerforxkcd.util.LogUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends BaseActivity {
     @SuppressWarnings("unused")
     private static final String TAG = LogUtils.makeLogTag(MainActivity.class);
 
     private static final int PAGE_NUMBER = 3;
+
+    private List<BaseFragment> fragments;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +40,11 @@ public class MainActivity extends BaseActivity {
         if (ab != null) {
             ab.setTitle(null);
         }
+
+        fragments = new ArrayList<>();
+        fragments.add(HomeFragment.newInstance());
+        fragments.add(PlaceholderFragment.newInstance());
+        fragments.add(PlaceholderFragment.newInstance());
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -46,11 +58,32 @@ public class MainActivity extends BaseActivity {
         tabLayout.setupWithViewPager(viewPager);
 
         setTabIcons(tabLayout, R.array.icons);
+
+        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+                RecyclerView recyclerView = fragments.get(tab.getPosition()).getRecyclerView();
+                if (recyclerView != null) {
+                    if (recyclerView.computeVerticalScrollOffset() > 25000) {
+                        recyclerView.scrollToPosition(0);
+                    } else {
+                        recyclerView.smoothScrollToPosition(0);
+                    }
+                }
+            }
+        });
     }
 
     private void setTabIcons(@NonNull TabLayout tabLayout, @ArrayRes int iconDrawables) {
         TypedArray icons = getResources().obtainTypedArray(iconDrawables);
-        assert icons.length() == PAGE_NUMBER && tabLayout.getTabCount() == PAGE_NUMBER;
         for (int i = 0; i < tabLayout.getTabCount(); i++) {
             TabLayout.Tab tab = tabLayout.getTabAt(i);
             if (tab != null) {
@@ -88,13 +121,7 @@ public class MainActivity extends BaseActivity {
 
         @Override
         public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-            switch (position) {
-                case 0:
-                    return HomeFragment.newInstance();
-            }
-            return PlaceholderFragment.newInstance(position + 1);
+            return fragments.get(position);
         }
 
         @Override
