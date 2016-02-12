@@ -29,6 +29,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.veyndan.readerforxkcd.activity.MainActivity" />
         </activity>
+
+        <service
+            android:name=".service.XkcdService"
+            android:exported="false"/>
     </application>
 
 </manifest>

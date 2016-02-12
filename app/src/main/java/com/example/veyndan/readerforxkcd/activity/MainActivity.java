@@ -18,6 +18,7 @@ import com.example.veyndan.readerforxkcd.R;
 import com.example.veyndan.readerforxkcd.fragment.BaseFragment;
 import com.example.veyndan.readerforxkcd.fragment.HomeFragment;
 import com.example.veyndan.readerforxkcd.fragment.PlaceholderFragment;
+import com.example.veyndan.readerforxkcd.service.XkcdService;
 import com.example.veyndan.readerforxkcd.util.LogUtils;
 
 import java.util.ArrayList;
@@ -35,6 +36,8 @@ public class MainActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        XkcdService.startActionDownload(this);
 
         ActionBar ab = getSupportActionBar();
         if (ab != null) {
