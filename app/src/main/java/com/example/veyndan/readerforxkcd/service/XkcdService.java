@@ -1,14 +1,14 @@
 package com.example.veyndan.readerforxkcd.service;
 
-import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.example.veyndan.readerforxkcd.fragment.HomeFragment;
+import com.example.veyndan.readerforxkcd.DatabaseHelper;
 import com.example.veyndan.readerforxkcd.model.Comic;
 import com.example.veyndan.readerforxkcd.util.LogUtils;
+import com.j256.ormlite.dao.RuntimeExceptionDao;
 
 import java.io.IOException;
 
@@ -19,7 +19,7 @@ import retrofit.Retrofit;
 import retrofit.http.GET;
 import retrofit.http.Path;
 
-public class XkcdService extends IntentService {
+public class XkcdService extends OrmLiteBaseIntentService<DatabaseHelper> {
     @SuppressWarnings("unused")
     private static final String TAG = LogUtils.makeLogTag(XkcdService.class);
 
@@ -27,7 +27,7 @@ public class XkcdService extends IntentService {
     private static final String ACTION_DOWNLOAD = PACKAGE + "action.DOWNLOAD";
 
     private static final String BASE_URL = "https://xkcd.com";
-    Retrofit retrofit = new Retrofit.Builder()
+    private final Retrofit retrofit = new Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build();
@@ -55,17 +55,14 @@ public class XkcdService extends IntentService {
 
     private void handleActionDownload() {
         final MyApiEndpointInterface service = retrofit.create(MyApiEndpointInterface.class);
+        final RuntimeExceptionDao<Comic, Integer> dao = getHelper().getSimpleDataDao();
 
-        for (int i = getLatest(service); i > 0; i--) {
-            Call<Comic> call = service.getComic(i);
-            call.enqueue(new Callback<Comic>() {
+        for (int i = 100; i > 0 && !dao.idExists(i); i--) {
+            service.getComic(i).enqueue(new Callback<Comic>() {
                 @Override
                 public void onResponse(retrofit.Response<Comic> response, Retrofit retrofit) {
-                    Comic comic = response.body();
-                    HomeFragment.comics.add(comic);
-                    if (HomeFragment.comics.size() % 100 == 0) {
-                        sendMessage();
-                    }
+                    dao.createIfNotExists(response.body());
+                    sendMessage();
                 }
 
                 @Override
@@ -77,13 +74,12 @@ public class XkcdService extends IntentService {
     }
 
     private int getLatest(MyApiEndpointInterface service) {
-        int latest = 0;
         try {
-            latest = service.getLatest().execute().body().getNum();
+            return service.getLatest().execute().body().getNum();
         } catch (IOException e) {
             Log.e(TAG, e.getMessage());
+            return 0;
         }
-        return latest;
     }
 
     private void sendMessage() {

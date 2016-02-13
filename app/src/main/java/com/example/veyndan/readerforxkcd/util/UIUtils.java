@@ -14,7 +14,7 @@ public class UIUtils {
                                       int animDuration, final Activity activity) {
         final long duration = (long) (animDuration * MainAdapter.animatorScale);
 
-        ValueAnimator anim = ValueAnimator.ofFloat(0, 1f);
+        final ValueAnimator anim = ValueAnimator.ofFloat(0, 1f);
         anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {

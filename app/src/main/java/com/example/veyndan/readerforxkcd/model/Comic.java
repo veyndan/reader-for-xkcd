@@ -1,16 +1,27 @@
 package com.example.veyndan.readerforxkcd.model;
 
+import com.j256.ormlite.field.DatabaseField;
+
 public class Comic {
 
-    @SuppressWarnings("unused")
+    @DatabaseField
     private String img;
-    @SuppressWarnings("unused")
+
+    @DatabaseField
     private String title;
-    @SuppressWarnings("unused")
-    private short num;
-    @SuppressWarnings("unused")
+
+    @DatabaseField(id = true)
+    private int num;
+
+    @DatabaseField
     private String alt;
+
+    @DatabaseField
     private double aspectRatio;
+
+    public Comic() {
+        // ORMLite needs a no-arg constructor
+    }
 
     public String getImg() {
         return img;
@@ -20,7 +31,7 @@ public class Comic {
         return title;
     }
 
-    public short getNum() {
+    public int getNum() {
         return num;
     }
 

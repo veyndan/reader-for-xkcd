@@ -34,10 +34,10 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        public ImageView img;
-        public TextView title;
-        public TextView num;
-        public TextView alt;
+        public final ImageView img;
+        public final TextView title;
+        public final TextView num;
+        public final TextView alt;
         public ViewHolder(final View itemView, final FragmentActivity activity) {
             super(itemView);
             img = (ImageView) itemView.findViewById(R.id.image);
@@ -88,7 +88,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext())
+        final View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_main, parent, false);
         return new ViewHolder(v, activity);
     }

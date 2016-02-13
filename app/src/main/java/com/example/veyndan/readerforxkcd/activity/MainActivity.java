@@ -24,6 +24,9 @@ import com.example.veyndan.readerforxkcd.util.LogUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+// TODO It appears that I have to uninstall the apk before running, most likely due to database
+// id uniqueness clashes.
+
 public class MainActivity extends BaseActivity {
     @SuppressWarnings("unused")
     private static final String TAG = LogUtils.makeLogTag(MainActivity.class);

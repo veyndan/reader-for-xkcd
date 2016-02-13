@@ -164,7 +164,7 @@ public class ImgActivity extends BaseActivity {
         MainAdapter.hiddenImageView.setVisibility(View.INVISIBLE);
 
         // Fade in the black background
-        ObjectAnimator bgAnim = ObjectAnimator.ofInt(background, "alpha", 0, 255);
+        final ObjectAnimator bgAnim = ObjectAnimator.ofInt(background, "alpha", 0, 255);
         bgAnim.setDuration(duration);
         bgAnim.start();
 
@@ -212,7 +212,7 @@ public class ImgActivity extends BaseActivity {
             imageView.animate().alpha(0);
         }
         // Fade out background
-        ObjectAnimator bgAnim = ObjectAnimator.ofInt(background, "alpha", 0);
+        final ObjectAnimator bgAnim = ObjectAnimator.ofInt(background, "alpha", 0);
         bgAnim.setDuration(duration);
         bgAnim.start();
 

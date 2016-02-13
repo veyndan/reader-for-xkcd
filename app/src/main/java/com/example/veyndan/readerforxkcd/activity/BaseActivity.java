@@ -1,12 +1,12 @@
 package com.example.veyndan.readerforxkcd.activity;
 
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
+import com.example.veyndan.readerforxkcd.DatabaseHelper;
+import com.example.veyndan.readerforxkcd.OrmLiteBaseCompatActivity;
 import com.example.veyndan.readerforxkcd.R;
 
-public class BaseActivity extends AppCompatActivity {
-
+public class BaseActivity extends OrmLiteBaseCompatActivity<DatabaseHelper> {
     private Toolbar toolbar;
 
     protected Toolbar getToolbar() {
