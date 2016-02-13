@@ -96,12 +96,7 @@ public class ImgActivity extends BaseActivity {
             }
         });
 
-        topLevelLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        topLevelLayout.setOnClickListener(v -> onBackPressed());
 
         topLevelLayout.setOnTouchListener(new View.OnTouchListener() {
             static final float alphaConstant = 0.5f;
@@ -229,12 +224,7 @@ public class ImgActivity extends BaseActivity {
      */
     @Override
     public void onBackPressed() {
-        runExitAnimation(new Runnable() {
-            public void run() {
-                // *Now* go ahead and exit the activity
-                finish();
-            }
-        });
+        runExitAnimation(this::finish);
     }
 
     @Override

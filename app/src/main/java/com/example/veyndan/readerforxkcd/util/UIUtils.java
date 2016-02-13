@@ -15,19 +15,16 @@ public class UIUtils {
         final long duration = (long) (animDuration * MainAdapter.animatorScale);
 
         final ValueAnimator anim = ValueAnimator.ofFloat(0, 1f);
-        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                // Use animation position to blend colors.
-                float position = animation.getAnimatedFraction();
+        anim.addUpdateListener(animation -> {
+            // Use animation position to blend colors.
+            float position = animation.getAnimatedFraction();
 
-                // Apply blended color to the status bar.
-                int blended = blendColors(from, to, position);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    activity.getWindow().setStatusBarColor(blended);
-                }
-
+            // Apply blended color to the status bar.
+            int blended = blendColors(from, to, position);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                activity.getWindow().setStatusBarColor(blended);
             }
+
         });
 
         anim.setDuration(duration).start();
