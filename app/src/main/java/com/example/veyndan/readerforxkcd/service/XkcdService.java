@@ -11,6 +11,9 @@ import com.example.veyndan.readerforxkcd.util.LogUtils;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
 
 import retrofit.Call;
 import retrofit.Callback;
@@ -57,12 +60,26 @@ public class XkcdService extends OrmLiteBaseIntentService<DatabaseHelper> {
         final MyApiEndpointInterface service = retrofit.create(MyApiEndpointInterface.class);
         final RuntimeExceptionDao<Comic, Integer> dao = getHelper().getSimpleDataDao();
 
+        final List<Comic> comics = new ArrayList<>();
+
         for (int i = 100; i > 0 && !dao.idExists(i); i--) {
             service.getComic(i).enqueue(new Callback<Comic>() {
                 @Override
                 public void onResponse(retrofit.Response<Comic> response, Retrofit retrofit) {
-                    dao.createIfNotExists(response.body());
-                    sendMessage();
+                    comics.add(response.body());
+                    if (comics.size() == 10) {
+                        dao.callBatchTasks(new Callable<Void>() {
+                            @Override
+                            public Void call() throws Exception {
+                                for (Comic comic : comics) {
+                                    dao.createIfNotExists(comic);
+                                }
+                                return null;
+                            }
+                        });
+                        sendMessage();
+                        comics.clear();
+                    }
                 }
 
                 @Override

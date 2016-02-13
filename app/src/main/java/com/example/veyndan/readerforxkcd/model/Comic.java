@@ -1,5 +1,7 @@
 package com.example.veyndan.readerforxkcd.model;
 
+import android.provider.BaseColumns;
+
 import com.j256.ormlite.field.DatabaseField;
 
 public class Comic {
@@ -10,7 +12,7 @@ public class Comic {
     @DatabaseField
     private String title;
 
-    @DatabaseField(id = true)
+    @DatabaseField(id = true, columnName = BaseColumns._ID)
     private int num;
 
     @DatabaseField
