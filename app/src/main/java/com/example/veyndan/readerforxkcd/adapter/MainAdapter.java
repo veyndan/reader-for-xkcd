@@ -38,6 +38,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
         public final TextView title;
         public final TextView num;
         public final TextView alt;
+
         public ViewHolder(final View itemView, final FragmentActivity activity) {
             super(itemView);
             img = (ImageView) itemView.findViewById(R.id.image);
@@ -45,32 +46,36 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
             num = (TextView) itemView.findViewById(R.id.num);
             alt = (TextView) itemView.findViewById(R.id.alt);
 
-            img.setOnClickListener(v -> {
-                // Interesting data to pass across are the thumbnail size/location, the
-                // url of the img, and the orientation (to avoid returning back to an
-                // obsolete configuration if the device rotates again in the meantime)
-                int[] screenLocation = new int[2];
-                v.getLocationOnScreen(screenLocation);
-                Intent subActivity = new Intent(activity, ImgActivity.class);
-                int orientation = activity.getResources().getConfiguration().orientation;
-                subActivity.
-                        putExtra(PACKAGE + ".orientation", orientation).
-                        putExtra(PACKAGE + ".img", (String) v.getTag()).
-                        putExtra(PACKAGE + ".left", screenLocation[0]).
-                        putExtra(PACKAGE + ".top", screenLocation[1]).
-                        putExtra(PACKAGE + ".width", v.getWidth()).
-                        putExtra(PACKAGE + ".height", v.getHeight());
-                activity.startActivity(subActivity);
+            img.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // Interesting data to pass across are the thumbnail size/location, the
+                    // url of the img, and the orientation (to avoid returning back to an
+                    // obsolete configuration if the device rotates again in the meantime)
+                    int[] screenLocation = new int[2];
+                    v.getLocationOnScreen(screenLocation);
+                    Intent subActivity = new Intent(activity, ImgActivity.class);
+                    int orientation = activity.getResources().getConfiguration().orientation;
+                    subActivity.
+                            putExtra(PACKAGE + ".orientation", orientation).
+                            putExtra(PACKAGE + ".img", (String) v.getTag()).
+                            putExtra(PACKAGE + ".left", screenLocation[0]).
+                            putExtra(PACKAGE + ".top", screenLocation[1]).
+                            putExtra(PACKAGE + ".width", v.getWidth()).
+                            putExtra(PACKAGE + ".height", v.getHeight());
+                    activity.startActivity(subActivity);
 
-                // Override transitions: we don't want the normal window animation in addition
-                // to our custom one
-                activity.overridePendingTransition(0, 0);
+                    // Override transitions: we don't want the normal window animation in addition
+                    // to our custom one
+                    activity.overridePendingTransition(0, 0);
 
-                hiddenImageView = img;
+                    hiddenImageView = img;
+                }
             });
         }
 
     }
+
     public MainAdapter(FragmentActivity activity, List<Comic> dataset) {
         this.activity = activity;
         this.dataset = dataset;

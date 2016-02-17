@@ -17,12 +17,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
-    // Used for RetroLambda
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
 }
 
 dependencies {
@@ -38,11 +32,4 @@ dependencies {
     compile 'com.squareup.retrofit:retrofit:2.0.0-beta2'
     compile 'com.squareup.retrofit:converter-gson:2.0.0-beta2'
     compile 'com.squareup.okhttp:okhttp:2.7.0'
-
-    compile 'com.j256.ormlite:ormlite-core:4.48'
-    compile 'com.j256.ormlite:ormlite-android:4.48'
-
-    // Used for RetroLambda
-    apply plugin: 'com.android.application' // or apply plugin: 'java'
-    apply plugin: 'me.tatarka.retrolambda'
 }

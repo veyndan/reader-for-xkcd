@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,15 +13,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.veyndan.readerforxkcd.DatabaseHelper;
 import com.example.veyndan.readerforxkcd.R;
 import com.example.veyndan.readerforxkcd.adapter.MainAdapter;
 import com.example.veyndan.readerforxkcd.model.Comic;
+import com.example.veyndan.readerforxkcd.provider.ComicContract;
 import com.example.veyndan.readerforxkcd.util.LogUtils;
-import com.j256.ormlite.android.apptools.OpenHelperManager;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class HomeFragment extends BaseFragment {
@@ -32,8 +31,6 @@ public class HomeFragment extends BaseFragment {
 
     private RecyclerView recyclerView;
 
-    private DatabaseHelper databaseHelper = null;
-
     public HomeFragment() {
     }
 
@@ -41,27 +38,18 @@ public class HomeFragment extends BaseFragment {
         return new HomeFragment();
     }
 
-    protected DatabaseHelper getHelper() {
-        if (databaseHelper == null) {
-            databaseHelper = OpenHelperManager.getHelper(getActivity(), DatabaseHelper.class);
-        }
-        return databaseHelper;
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (databaseHelper != null) {
-            OpenHelperManager.releaseHelper();
-            databaseHelper = null;
-        }
-    }
-
     private BroadcastReceiver messageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            comics = getHelper().getSimpleDataDao().queryForAll();
-            Collections.reverse(comics);
+            Cursor cursor = context.getContentResolver().query(ComicContract.Comics.CONTENT_URI, null, null, null, null);
+            if (cursor != null) {
+                cursor.moveToFirst();
+                while (!cursor.isAfterLast()) {
+                    comics.add(Comic.fromCursor(cursor));
+                    cursor.moveToNext();
+                }
+                cursor.close();
+            }
             adapter = new MainAdapter(getActivity(), comics);
             recyclerView.setAdapter(adapter);
         }
@@ -81,7 +69,7 @@ public class HomeFragment extends BaseFragment {
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
         final RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
-        comics = getHelper().getSimpleDataDao().queryForAll();
+        comics = new ArrayList<>();
         adapter = new MainAdapter(getActivity(), comics);
         recyclerView.setAdapter(adapter);
         return rootView;

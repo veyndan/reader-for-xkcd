@@ -1,28 +1,25 @@
 package com.example.veyndan.readerforxkcd.model;
 
-import android.provider.BaseColumns;
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.support.annotation.NonNull;
 
-import com.j256.ormlite.field.DatabaseField;
+import com.example.veyndan.readerforxkcd.provider.ComicContract;
 
 public class Comic {
 
-    @DatabaseField
     private String img;
-
-    @DatabaseField
     private String title;
-
-    @DatabaseField(id = true, columnName = BaseColumns._ID)
     private int num;
-
-    @DatabaseField
     private String alt;
-
-    @DatabaseField
     private double aspectRatio;
 
-    public Comic() {
-        // ORMLite needs a no-arg constructor
+    private Comic(String img, String title, int num, String alt, double aspectRatio) {
+        this.img = img;
+        this.title = title;
+        this.num = num;
+        this.alt = alt;
+        this.aspectRatio = aspectRatio;
     }
 
     public String getImg() {
@@ -51,5 +48,25 @@ public class Comic {
 
     public void setAspectRatio(double aspectRatio) {
         this.aspectRatio = aspectRatio;
+    }
+
+    public static Comic fromCursor(@NonNull Cursor cursor) {
+        return new Comic(
+                cursor.getString(1),
+                cursor.getString(2),
+                cursor.getInt(3),
+                cursor.getString(4),
+                cursor.getDouble(5)
+        );
+    }
+
+    public static ContentValues toContentValues(Comic comic) {
+        ContentValues values = new ContentValues();
+        values.put(ComicContract.Comics.COMIC_IMG, comic.getImg());
+        values.put(ComicContract.Comics.COMIC_TITLE, comic.getTitle());
+        values.put(ComicContract.Comics.COMIC_NUM, comic.getNum());
+        values.put(ComicContract.Comics.COMIC_ALT, comic.getAlt());
+        values.put(ComicContract.Comics.COMIC_ASPECT_RATIO, comic.getAspectRatio());
+        return values;
     }
 }

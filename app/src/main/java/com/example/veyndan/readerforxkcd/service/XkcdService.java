@@ -1,18 +1,18 @@
 package com.example.veyndan.readerforxkcd.service;
 
+import android.app.IntentService;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.example.veyndan.readerforxkcd.DatabaseHelper;
 import com.example.veyndan.readerforxkcd.model.Comic;
+import com.example.veyndan.readerforxkcd.provider.ComicContract;
 import com.example.veyndan.readerforxkcd.util.LogUtils;
-import com.j256.ormlite.dao.RuntimeExceptionDao;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import retrofit.Call;
 import retrofit.Callback;
@@ -21,7 +21,7 @@ import retrofit.Retrofit;
 import retrofit.http.GET;
 import retrofit.http.Path;
 
-public class XkcdService extends OrmLiteBaseIntentService<DatabaseHelper> {
+public class XkcdService extends IntentService {
     @SuppressWarnings("unused")
     private static final String TAG = LogUtils.makeLogTag(XkcdService.class);
 
@@ -57,25 +57,29 @@ public class XkcdService extends OrmLiteBaseIntentService<DatabaseHelper> {
 
     private void handleActionDownload() {
         final MyApiEndpointInterface service = retrofit.create(MyApiEndpointInterface.class);
-        final RuntimeExceptionDao<Comic, Integer> dao = getHelper().getSimpleDataDao();
 
-        final List<Comic> comics = new ArrayList<>();
+        final ContentResolver resolver = getContentResolver();
 
-        for (int i = 100; i > 0 && !dao.idExists(i); i--) {
+        for (int i = 100; i > 0; i--) {
+            Cursor cursor = resolver.query(
+                    ComicContract.Comics.CONTENT_URI,
+                    new String[]{ComicContract.Comics.COMIC_NUM},
+                    ComicContract.Comics.COMIC_NUM + " = ?",
+                    new String[]{String.valueOf(i)},
+                    null);
+            if (cursor != null) {
+                boolean contains = cursor.getCount() > 0;
+                cursor.close();
+                if (contains) continue;
+            } else {
+                continue;
+            }
             service.getComic(i).enqueue(new Callback<Comic>() {
                 @Override
                 public void onResponse(retrofit.Response<Comic> response, Retrofit retrofit) {
-                    comics.add(response.body());
-                    if (comics.size() == 10) {
-                        dao.callBatchTasks(() -> {
-                            for (Comic comic : comics) {
-                                dao.createIfNotExists(comic);
-                            }
-                            return null;
-                        });
-                        sendMessage();
-                        comics.clear();
-                    }
+                    resolver.insert(ComicContract.Comics.CONTENT_URI,
+                            Comic.toContentValues(response.body()));
+                    sendMessage();
                 }
 
                 @Override

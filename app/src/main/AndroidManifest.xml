@@ -32,7 +32,13 @@
 
         <service
             android:name=".service.XkcdService"
-            android:exported="false"/>
+            android:exported="false" />
+
+        <provider
+            android:name=".provider.ComicProvider"
+            android:authorities="com.example.veyndan.readerforxkcd"
+            android:enabled="true"
+            android:exported="true" />
     </application>
 
 </manifest>
