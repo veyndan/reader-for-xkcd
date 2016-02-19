@@ -8,7 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import com.example.veyndan.readerforxkcd.util.LogUtils;
 
 /**
- * https://gist.github.com/skyfishjy/443b7448f59be978bc59
+ * <a href="https://gist.github.com/skyfishjy/443b7448f59be978bc59">Source</a>
  */
 
 public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHolder>
