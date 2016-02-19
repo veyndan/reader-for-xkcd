@@ -98,8 +98,13 @@ public class ComicProvider extends ContentProvider {
             default:
                 throw new IllegalArgumentException("Unknown insert uri: " + uri);
         }
-        return db.query(ComicDatabase.Tables.COMICS, projection, selection,
+        Cursor cursor = db.query(ComicDatabase.Tables.COMICS, projection, selection,
                 selectionArgs, null, null, sortOrder);
+        Context context = getContext();
+        if (context != null) {
+            cursor.setNotificationUri(context.getContentResolver(), uri);
+        }
+        return cursor;
     }
 
     @Override

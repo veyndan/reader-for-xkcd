@@ -5,7 +5,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.example.veyndan.readerforxkcd.model.Comic;
@@ -79,7 +78,6 @@ public class XkcdService extends IntentService {
                 public void onResponse(retrofit.Response<Comic> response, Retrofit retrofit) {
                     resolver.insert(ComicContract.Comics.CONTENT_URI,
                             Comic.toContentValues(response.body()));
-                    sendMessage();
                 }
 
                 @Override
@@ -97,10 +95,6 @@ public class XkcdService extends IntentService {
             Log.e(TAG, e.getMessage());
             return 0;
         }
-    }
-
-    private void sendMessage() {
-        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("finished-downloading"));
     }
 
     public interface MyApiEndpointInterface {
