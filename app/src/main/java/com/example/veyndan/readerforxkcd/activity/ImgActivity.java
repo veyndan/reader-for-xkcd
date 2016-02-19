@@ -21,6 +21,7 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.example.veyndan.readerforxkcd.R;
 import com.example.veyndan.readerforxkcd.adapter.MainAdapter;
 import com.example.veyndan.readerforxkcd.util.LogUtils;
+import com.example.veyndan.readerforxkcd.util.StatusBarUtils;
 import com.example.veyndan.readerforxkcd.util.UIUtils;
 
 public class ImgActivity extends BaseActivity {
@@ -168,7 +169,7 @@ public class ImgActivity extends BaseActivity {
         bgAnim.setDuration(duration);
         bgAnim.start();
 
-        UIUtils.tintSystemBars(
+        StatusBarUtils.tintSystemBars(
                 ContextCompat.getColor(this, R.color.colorPrimaryDark),
                 ContextCompat.getColor(this, android.R.color.black),
                 animDuration, ImgActivity.this);
@@ -217,7 +218,7 @@ public class ImgActivity extends BaseActivity {
         bgAnim.start();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            UIUtils.tintSystemBars(getWindow().getStatusBarColor(),
+            StatusBarUtils.tintSystemBars(getWindow().getStatusBarColor(),
                     ContextCompat.getColor(this, R.color.colorPrimaryDark),
                     animDuration, ImgActivity.this);
         }
