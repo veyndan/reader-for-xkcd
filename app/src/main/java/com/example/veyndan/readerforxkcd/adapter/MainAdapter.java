@@ -1,6 +1,7 @@
 package com.example.veyndan.readerforxkcd.adapter;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -18,9 +19,7 @@ import com.example.veyndan.readerforxkcd.activity.ImgActivity;
 import com.example.veyndan.readerforxkcd.model.Comic;
 import com.example.veyndan.readerforxkcd.util.LogUtils;
 
-import java.util.List;
-
-public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
+public class MainAdapter extends CursorRecyclerViewAdapter<MainAdapter.ViewHolder> {
     @SuppressWarnings("unused")
     private static final String TAG = LogUtils.makeLogTag(MainAdapter.class);
 
@@ -28,7 +27,6 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
     public static float animatorScale = 1;
 
     private final FragmentActivity activity;
-    private final List<Comic> dataset;
 
     public static ImageView hiddenImageView;
 
@@ -76,9 +74,9 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
 
     }
 
-    public MainAdapter(FragmentActivity activity, List<Comic> dataset) {
+    public MainAdapter(FragmentActivity activity, Cursor cursor) {
+        super(cursor);
         this.activity = activity;
-        this.dataset = dataset;
     }
 
     public void onResume() {
@@ -96,8 +94,8 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
-        final Comic comic = dataset.get(position);
+    public void onBindViewHolder(final ViewHolder holder, Cursor cursor) {
+        final Comic comic = Comic.fromCursor(cursor);
         holder.img.getLayoutParams().height = (int) (holder.img.getWidth() * comic.getAspectRatio());
         holder.img.setImageResource(android.R.color.transparent);
         holder.img.setTag(comic.getImg());
@@ -117,10 +115,5 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
         holder.title.setText(comic.getTitle());
         holder.num.setText(activity.getString(R.string.num, comic.getNum()));
         holder.alt.setText(comic.getAlt());
-    }
-
-    @Override
-    public int getItemCount() {
-        return dataset.size();
     }
 }

@@ -6,6 +6,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,11 +25,12 @@ import com.example.veyndan.readerforxkcd.util.LogUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeFragment extends BaseFragment {
+public class HomeFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor> {
     @SuppressWarnings("unused")
     private static final String TAG = LogUtils.makeLogTag(HomeFragment.class);
 
     public static List<Comic> comics = new ArrayList<>();
+
     private MainAdapter adapter;
 
     private RecyclerView recyclerView;
@@ -41,7 +45,8 @@ public class HomeFragment extends BaseFragment {
     private BroadcastReceiver messageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Cursor cursor = context.getContentResolver().query(ComicContract.Comics.CONTENT_URI, null, null, null, null);
+            Cursor cursor = context.getContentResolver().query(
+                    ComicContract.Comics.CONTENT_URI, null, null, null, null);
             if (cursor != null) {
                 cursor.moveToFirst();
                 while (!cursor.isAfterLast()) {
@@ -50,8 +55,7 @@ public class HomeFragment extends BaseFragment {
                 }
                 cursor.close();
             }
-            adapter = new MainAdapter(getActivity(), comics);
-            recyclerView.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
         }
     };
 
@@ -70,8 +74,12 @@ public class HomeFragment extends BaseFragment {
         final RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
         comics = new ArrayList<>();
-        adapter = new MainAdapter(getActivity(), comics);
+        Cursor cursor = getActivity().getContentResolver().query(
+                ComicContract.Comics.CONTENT_URI, null, null, null, null);
+        adapter = new MainAdapter(getActivity(), cursor);
         recyclerView.setAdapter(adapter);
+
+        getLoaderManager().initLoader(0, null, this);
         return rootView;
     }
 
@@ -91,5 +99,21 @@ public class HomeFragment extends BaseFragment {
     @Override
     public RecyclerView getRecyclerView() {
         return recyclerView;
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return new CursorLoader(
+                getActivity(), ComicContract.Comics.CONTENT_URI, null, null, null, null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        adapter.swapCursor(cursor);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        adapter.changeCursor(null);
     }
 }

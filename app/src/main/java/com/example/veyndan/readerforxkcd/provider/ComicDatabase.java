@@ -17,7 +17,7 @@ public class ComicDatabase extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "schedule.db";
 
-    interface Tables {
+    public interface Tables {
         String COMICS = "comics";
     }
 

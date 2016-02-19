@@ -17,7 +17,6 @@ import android.view.MenuItem;
 import com.example.veyndan.readerforxkcd.R;
 import com.example.veyndan.readerforxkcd.fragment.BaseFragment;
 import com.example.veyndan.readerforxkcd.fragment.HomeFragment;
-import com.example.veyndan.readerforxkcd.fragment.PlaceholderFragment;
 import com.example.veyndan.readerforxkcd.service.XkcdService;
 import com.example.veyndan.readerforxkcd.util.LogUtils;
 
@@ -28,7 +27,7 @@ public class MainActivity extends BaseActivity {
     @SuppressWarnings("unused")
     private static final String TAG = LogUtils.makeLogTag(MainActivity.class);
 
-    private static final int PAGE_NUMBER = 3;
+    private static final int PAGE_NUMBER = 1;
 
     private List<BaseFragment> fragments;
 
@@ -46,8 +45,6 @@ public class MainActivity extends BaseActivity {
 
         fragments = new ArrayList<>();
         fragments.add(HomeFragment.newInstance());
-        fragments.add(PlaceholderFragment.newInstance());
-        fragments.add(PlaceholderFragment.newInstance());
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
