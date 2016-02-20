@@ -4,9 +4,9 @@ import android.animation.ObjectAnimator;
 import android.animation.TimeInterpolator;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -123,14 +123,11 @@ public class ImgActivity extends BaseActivity {
                                 255 - alphaConstant * Math.abs(event.getRawY() + dy));
                         background.setAlpha(alpha);
 
-
                         final int statusBarColorFrom = ContextCompat.getColor(ImgActivity.this, android.R.color.black);
                         final int statusBarColorTo = ContextCompat.getColor(ImgActivity.this, R.color.colorPrimaryDark);
 
                         int blended = UIUtils.blendColors(statusBarColorFrom, statusBarColorTo, 1f - alpha / 255f);
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            getWindow().setStatusBarColor(blended);
-                        }
+                        getWindow().setStatusBarColor(blended);
                         return true;
                     default:
                         return false;
@@ -144,8 +141,6 @@ public class ImgActivity extends BaseActivity {
      * size/location. In parallel, the background of the activity is fading in.
      */
     public void runEnterAnimation() {
-        final long duration = (long) (animDuration * MainAdapter.animatorScale);
-
         // Set starting values for properties we're going to animate. These
         // values scale and position the full size version down to the thumbnail
         // size/location, from which we'll animate it back up
@@ -157,7 +152,7 @@ public class ImgActivity extends BaseActivity {
         imageView.setTranslationY(topDelta);
 
         // Animate scale and translation to go from thumbnail to full size
-        imageView.animate().setDuration(duration).
+        imageView.animate().setDuration(animDuration).
                 scaleX(1).scaleY(1).
                 translationX(0).translationY(0).
                 setInterpolator(decelerator);
@@ -166,13 +161,12 @@ public class ImgActivity extends BaseActivity {
 
         // Fade in the black background
         final ObjectAnimator bgAnim = ObjectAnimator.ofInt(background, "alpha", 0, 255);
-        bgAnim.setDuration(duration);
+        bgAnim.setDuration(animDuration);
         bgAnim.start();
 
-        StatusBarUtils.tintSystemBars(
-                ContextCompat.getColor(this, R.color.colorPrimaryDark),
+        StatusBarUtils.animateStatusBarColor(
                 ContextCompat.getColor(this, android.R.color.black),
-                animDuration, ImgActivity.this);
+                animDuration, this);
     }
 
     /**
@@ -184,15 +178,13 @@ public class ImgActivity extends BaseActivity {
      *                  when we actually switch activities)
      */
     public void runExitAnimation(final Runnable endAction) {
-        final long duration = (long) (animDuration * MainAdapter.animatorScale);
-
         // No need to set initial values for the reverse animation; the img is at the
         // starting size/location that we want to start from. Just animate to the
         // thumbnail size/location that we retrieved earlier
 
         // Caveat: configuration change invalidates thumbnail positions; just animate
         // the scale around the center. Also, fade it out since it won't match up with
-        // whatever's actually in the center
+        // whatever is actually in the center
         final boolean fadeOut;
         if (getResources().getConfiguration().orientation != originalOrientation) {
             imageView.setPivotX(imageView.getWidth() / 2);
@@ -205,7 +197,7 @@ public class ImgActivity extends BaseActivity {
         }
 
         // Animate img back to thumbnail size/location
-        imageView.animate().setDuration(duration).
+        imageView.animate().setDuration(animDuration).
                 scaleX(widthScale).scaleY(heightScale).
                 translationX(leftDelta).translationY(topDelta).
                 withEndAction(endAction);
@@ -214,14 +206,12 @@ public class ImgActivity extends BaseActivity {
         }
         // Fade out background
         final ObjectAnimator bgAnim = ObjectAnimator.ofInt(background, "alpha", 0);
-        bgAnim.setDuration(duration);
+        bgAnim.setDuration(animDuration);
         bgAnim.start();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            StatusBarUtils.tintSystemBars(getWindow().getStatusBarColor(),
-                    ContextCompat.getColor(this, R.color.colorPrimaryDark),
-                    animDuration, ImgActivity.this);
-        }
+        StatusBarUtils.animateStatusBarColor(
+                ContextCompat.getColor(this, R.color.colorPrimaryDark),
+                animDuration, this);
     }
 
     /**

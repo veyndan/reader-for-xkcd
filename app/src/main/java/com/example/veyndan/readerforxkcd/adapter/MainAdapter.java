@@ -24,7 +24,6 @@ public class MainAdapter extends CursorRecyclerViewAdapter<MainAdapter.ViewHolde
     private static final String TAG = LogUtils.makeLogTag(MainAdapter.class);
 
     private static final String PACKAGE = "com.example.android.activityanim";
-    public static float animatorScale = 1;
 
     private final FragmentActivity activity;
 
