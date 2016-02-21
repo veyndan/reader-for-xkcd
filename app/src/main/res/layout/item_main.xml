@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center"
-    android:layout_margin="2dp"
+    app:cardUseCompatPadding="true"
     card_view:cardBackgroundColor="@android:color/white"
     card_view:cardCornerRadius="4dp">
 
@@ -16,7 +16,7 @@
         android:orientation="vertical">
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/profile"
+            android:id="@+id/profileImage"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_margin="16dp"
@@ -27,20 +27,22 @@
             android:id="@+id/num"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@id/profile"
-            android:layout_toEndOf="@id/profile"
-            android:layout_toRightOf="@id/profile"
+            android:layout_alignBottom="@id/profileImage"
+            android:layout_toEndOf="@id/profileImage"
+            android:layout_toRightOf="@id/profileImage"
             android:singleLine="true"
             android:textColor="@color/body_text_2"
             android:textSize="@dimen/text_size_small" />
 
         <TextView
+            android:id="@+id/profileName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_above="@id/num"
-            android:layout_alignTop="@id/profile"
-            android:layout_toEndOf="@id/profile"
-            android:layout_toRightOf="@id/profile"
+            android:layout_alignTop="@id/profileImage"
+            android:layout_toEndOf="@id/profileImage"
+            android:layout_toRightOf="@id/profileImage"
+            android:ellipsize="marquee"
             android:singleLine="true"
             android:text="xkcd"
             android:textColor="@color/body_text_1"
@@ -51,7 +53,7 @@
             android:id="@+id/image"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/profile"
+            android:layout_below="@id/profileImage"
             android:adjustViewBounds="true" />
 
         <TextView
