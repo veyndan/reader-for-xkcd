@@ -40,7 +40,8 @@ public class Comic {
 
     /**
      * Aspect ratio in form of width:height where width = 1 i.e. 1:height
-     * Returns -1 if aspectRatio not set yet
+     *
+     * @return Aspect ratio of image or 0 if the image has not been set yet or there is no image
      */
     public double getAspectRatio() {
         return aspectRatio;
