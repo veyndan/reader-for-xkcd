@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.ContentFrameLayout;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -45,7 +46,7 @@ public class ImgActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_img);
         imageView = (ImageView) findViewById(R.id.imageView);
-        final FrameLayout topLevelLayout = (FrameLayout) findViewById(R.id.topLevelLayout);
+        final FrameLayout topLevelLayout = (FrameLayout) imageView.getParent();
 
         animDuration = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
