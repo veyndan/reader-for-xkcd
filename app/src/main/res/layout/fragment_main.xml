@@ -1,14 +1,8 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/recycler_view"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:activity=".activity.MainActivity$PlaceholderFragment">
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:clipToPadding="false"
-        android:padding="4dp" />
-
-</RelativeLayout>
+    android:layout_height="wrap_content"
+    android:clipToPadding="false"
+    android:padding="4dp"
+    tools:activity=".activity.MainActivity$PlaceholderFragment" />

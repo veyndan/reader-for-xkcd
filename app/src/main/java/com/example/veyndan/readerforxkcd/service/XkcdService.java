@@ -2,6 +2,7 @@ package com.example.veyndan.readerforxkcd.service;
 
 import android.app.IntentService;
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -12,6 +13,8 @@ import com.example.veyndan.readerforxkcd.provider.ComicContract;
 import com.example.veyndan.readerforxkcd.util.LogUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import retrofit.Call;
 import retrofit.Callback;
@@ -59,7 +62,9 @@ public class XkcdService extends IntentService {
 
         final ContentResolver resolver = getContentResolver();
 
-        for (int i = 100; i > 0; i--) {
+        final List<ContentValues> cvList = new ArrayList<>();
+
+        for (int i = getLatest(service); i > 0 && i != 404; i--) {
             Cursor cursor = resolver.query(
                     ComicContract.Comics.CONTENT_URI,
                     new String[]{ComicContract.Comics.COMIC_NUM},
@@ -73,11 +78,16 @@ public class XkcdService extends IntentService {
             } else {
                 continue;
             }
+            final int toInsert = i - 1;
             service.getComic(i).enqueue(new Callback<Comic>() {
                 @Override
                 public void onResponse(retrofit.Response<Comic> response, Retrofit retrofit) {
-                    resolver.insert(ComicContract.Comics.CONTENT_URI,
-                            Comic.toContentValues(response.body()));
+                    cvList.add(Comic.toContentValues(response.body()));
+                    if (cvList.size() % 30 == 0 || toInsert == 0) {
+                        ContentValues[] cv = cvList.toArray(new ContentValues[cvList.size()]);
+                        resolver.bulkInsert(ComicContract.Comics.CONTENT_URI, cv);
+                        cvList.clear();
+                    }
                 }
 
                 @Override

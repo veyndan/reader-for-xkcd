@@ -1,10 +1,12 @@
 package com.example.veyndan.readerforxkcd.provider;
 
 import android.content.ContentProvider;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -16,9 +18,9 @@ public class ComicProvider extends ContentProvider {
     @SuppressWarnings("unused")
     private static final String TAG = LogUtils.makeLogTag(ComicProvider.class);
 
-    private ComicDatabase mOpenHelper;
+    private ComicDatabase openHelper;
 
-    private static final UriMatcher sUriMatcher = buildUriMatcher();
+    private static final UriMatcher uriMatcher = buildUriMatcher();
 
     private static final int COMICS = 100;
     private static final int COMICS_ID = 101;
@@ -48,8 +50,8 @@ public class ComicProvider extends ContentProvider {
 
     @Override
     public Uri insert(@NonNull Uri uri, ContentValues values) {
-        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-        switch (sUriMatcher.match(uri)) {
+        final SQLiteDatabase db = openHelper.getWritableDatabase();
+        switch (uriMatcher.match(uri)) {
             case COMICS:
                 db.insertOrThrow(ComicDatabase.Tables.COMICS, null, values);
                 notifyChange(uri);
@@ -60,9 +62,46 @@ public class ComicProvider extends ContentProvider {
         }
     }
 
+    public int bulkInsert(@NonNull Uri uri, @NonNull ContentValues[] values){
+        final SQLiteDatabase db = openHelper.getWritableDatabase();
+
+        int numInserted = 0;
+        String table;
+
+        switch (uriMatcher.match(uri)) {
+            case COMICS:
+                table = ComicDatabase.Tables.COMICS;
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown insert uri: " + uri);
+        }
+
+        db.beginTransaction();
+        Context context = getContext();
+        ContentResolver contentResolver = context == null ? null : context.getContentResolver();
+
+        try {
+            for (ContentValues cv : values) {
+                long newID = db.insertOrThrow(table, null, cv);
+                if (newID <= 0) {
+                    throw new SQLException("Failed to insert row into " + uri);
+                }
+            }
+            db.setTransactionSuccessful();
+            if (contentResolver != null) {
+                contentResolver.notifyChange(uri, null);
+            }
+            numInserted = values.length;
+        } finally {
+            db.endTransaction();
+        }
+
+        return numInserted;
+    }
+
     @Override
     public boolean onCreate() {
-        mOpenHelper = new ComicDatabase(getContext());
+        openHelper = new ComicDatabase(getContext());
         return true;
     }
 
@@ -86,9 +125,9 @@ public class ComicProvider extends ContentProvider {
     @Override
     public Cursor query(@NonNull Uri uri, String[] projection, String selection,
                         String[] selectionArgs, String sortOrder) {
-        final SQLiteDatabase db = mOpenHelper.getReadableDatabase();
+        final SQLiteDatabase db = openHelper.getReadableDatabase();
 
-        switch (sUriMatcher.match(uri)) {
+        switch (uriMatcher.match(uri)) {
             case COMICS:
                 if (TextUtils.isEmpty(sortOrder)) sortOrder = ComicContract.Comics.DEFAULT_SORT;
                 break;
