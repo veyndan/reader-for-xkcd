@@ -5,9 +5,6 @@ import android.animation.TimeInterpolator;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.ContentFrameLayout;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -22,8 +19,6 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.example.veyndan.readerforxkcd.R;
 import com.example.veyndan.readerforxkcd.adapter.MainAdapter;
 import com.example.veyndan.readerforxkcd.util.LogUtils;
-import com.example.veyndan.readerforxkcd.util.StatusBarUtils;
-import com.example.veyndan.readerforxkcd.util.UIUtils;
 
 public class ImgActivity extends BaseActivity {
     @SuppressWarnings("unused")
@@ -123,12 +118,6 @@ public class ImgActivity extends BaseActivity {
                         int alpha = (int) Math.max(0,
                                 255 - alphaConstant * Math.abs(event.getRawY() + dy));
                         background.setAlpha(alpha);
-
-                        final int statusBarColorFrom = ContextCompat.getColor(ImgActivity.this, android.R.color.black);
-                        final int statusBarColorTo = ContextCompat.getColor(ImgActivity.this, R.color.colorPrimaryDark);
-
-                        int blended = UIUtils.blendColors(statusBarColorFrom, statusBarColorTo, 1f - alpha / 255f);
-                        getWindow().setStatusBarColor(blended);
                         return true;
                     default:
                         return false;
@@ -164,10 +153,6 @@ public class ImgActivity extends BaseActivity {
         final ObjectAnimator bgAnim = ObjectAnimator.ofInt(background, "alpha", 0, 255);
         bgAnim.setDuration(animDuration);
         bgAnim.start();
-
-        StatusBarUtils.animateStatusBarColor(
-                ContextCompat.getColor(this, android.R.color.black),
-                animDuration, this);
     }
 
     /**
@@ -209,10 +194,6 @@ public class ImgActivity extends BaseActivity {
         final ObjectAnimator bgAnim = ObjectAnimator.ofInt(background, "alpha", 0);
         bgAnim.setDuration(animDuration);
         bgAnim.start();
-
-        StatusBarUtils.animateStatusBarColor(
-                ContextCompat.getColor(this, R.color.colorPrimaryDark),
-                animDuration, this);
     }
 
     /**

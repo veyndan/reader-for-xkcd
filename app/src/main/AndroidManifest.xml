@@ -24,7 +24,7 @@
             android:name=".activity.ImgActivity"
             android:label="@string/title_activity_img"
             android:parentActivityName=".activity.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar.Transparent.Fullscreen">
+            android:theme="@style/AppTheme.NoActionBar.Transparent">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.veyndan.readerforxkcd.activity.MainActivity" />

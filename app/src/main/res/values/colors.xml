@@ -3,6 +3,7 @@
     <color name="colorPrimary">#F44336</color>
     <color name="colorPrimaryDark">#D32F2F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="temp">#D32F2F</color>
 
     <color name="body_text_1">#de000000</color>
     <color name="body_text_2">#8a000000</color>
